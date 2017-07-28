@@ -1,0 +1,151 @@
+https://www.hackerearth.com/challenge/competitive/july-circuits-17/algorithm/pythagorean-triangles-0158a4c5/
+
+
+only some change square means m*n which can be single also .
+
+
+
+You are given a grid of size n×n filled with numbers in each of its cells. 
+Now you need to count total square in the grid such that the sum of the numbers on its
+ top , left , right and bottom cells is a prime number. 
+In case there is no cell in a particular direction assume the number to be as 0.
+
+
+solution
+
+//
+//  main.cpp
+//  2
+//
+//  Created by anand kumar on 28/07/17.
+//  Copyright © 2017 anand kumar. All rights reserved.
+//
+
+#include <iostream>
+using namespace std;
+
+long g[101][101],sumH[101][101],sumV[101][101];
+bool prime[50001];
+void is_prime()
+{
+    for(long i=0;i<10001;i++)
+    {
+        if(i%2==0)
+            prime[i]=false;
+        else
+            prime[i]=true;
+    }
+    prime[0]=false;
+    prime[1]=false;
+    prime[2]=true;
+    for(long i=3;i<50001;i+=2)
+    {
+        if(prime[i])
+        {
+            long num=2;
+            while(num*i<50001)
+            {
+                prime[num*i]=false;
+                num++;
+            }
+        }
+    }
+}
+int main(int argc, const char * argv[]) {
+    is_prime();
+    long n;
+    cin>>n;
+    for(long i=0;i<n;i++)
+    {
+        for(long j=0;j<n;j++)
+        {
+            cin>>g[i][j];
+            if(j==0)
+            {
+                sumH[i][j]=g[i][j];
+            }
+            else{
+                sumH[i][j]=sumH[i][j-1]+g[i][j];
+            }
+            if(i==0)
+            {
+                sumV[i][j]=g[i][j];
+            }
+            else{
+                sumV[i][j]=sumV[i-1][j]+g[i][j];
+            }
+        }
+        
+    }
+    long ans=0;
+    for(long i=0;i<n;i++)
+    {
+        for(long j=0;j<n;j++)
+        {
+            long k=1;
+            while(k+j<=n&&k+i<=n)
+            {//cout<<i<<" "<<j<<" "<<k<<" ";
+                long sum=0;
+                if(i==0&&j==0&&i+k==n&&j+k==n)
+                {
+                    //cout<<"if10 ";
+                }
+                else if(i==0&&j==0&&i+k<n&&j+k<n)
+                {//cout<<"if1 ";
+                    sum+=sumV[i+k-1][j+k];//-sumV[i][j+k];
+                    sum+=sumH[i+k][j+k-1];
+                }
+                else if(i==0&&j+k<n&&i+k<n){//cout<<"if2 ";
+                    sum+=sumV[i+k-1][j+k];
+                    sum+=sumV[i+k-1][j-1];
+                    sum+=sumH[i+k][j+k-1]-sumH[i+k][j-1];
+                }
+                else if(i==0&&j+k==n)
+                {//cout<<"if21 ";
+                    sum+=sumV[i+k-1][j-1];
+                    sum+=sumH[i+k][j+k-1]-sumH[i+k][j-1];
+                }
+                else if(j==0&&i+k<n&&j+k<n){//cout<<"if3 ";
+                    sum+=sumV[i+k-1][j+k]-sumV[i-1][j+k];
+                    sum+=sumH[i+k][j+k-1];
+                    sum+=sumH[i-1][j+k-1];
+                }
+                else if(j==0&&i+k==n)
+                {//cout<<"if31 ";
+                    sum+=sumH[i-1][j+k-1];
+                    sum+=sumV[i+k-1][j+k]-sumV[i-1][j+k];
+                }
+                else if(i+k==n&&j+k==n){//cout<<"if4 ";
+                    sum+=sumV[i+k-1][j-1]-sumV[i-1][j-1];
+                    sum+=sumH[i-1][j+k-1]-sumH[i-1][j-1];
+                }
+                else if(j+k==n){//cout<<"if41 ";
+                    sum+=sumV[i+k-1][j-1]-sumV[i-1][j-1];
+                    sum+=sumH[i+k][j+k-1]-sumH[i+k][j-1];
+                    sum+=sumH[i-1][j+k-1]-sumH[i-1][j-1];
+                }
+                else if(i+k==n)
+                {//cout<<"if5 ";
+                    sum+=sumV[i+k-1][j+k]-sumV[i-1][j+k];
+                    sum+=sumV[i+k-1][j-1]-sumV[i-1][j-1];
+                    sum+=sumH[i-1][j+k-1]-sumH[i-1][j-1];
+                }
+                else{//cout<<"if6 ";
+                    sum+=sumV[i+k-1][j+k]-sumV[i-1][j+k];
+                    sum+=sumV[i+k-1][j-1]-sumV[i-1][j-1];
+                    sum+=sumH[i+k][j+k-1]-sumH[i+k][j-1];
+                    sum+=sumH[i-1][j+k-1]-sumH[i-1][j-1];
+                }
+                //cout<<sum<<" "<<endl;;
+                if(prime[sum])
+                {
+                    ans++;
+                }
+                k++;
+            }
+        }
+    }
+    cout<<ans<<endl;
+}
+
+
